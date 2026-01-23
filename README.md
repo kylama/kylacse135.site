@@ -1,15 +1,22 @@
 # CSE 135 - Homework 1
 
+## Team Members
+
+- Kyla Ma
+
+## User "grader" Password
+
+E95%r9qeNK%uX#
+
+## Link to Site
+
+https://kylacse135.site
+
 ## Deployment
 
 - Hosted on DigitalOcean Droplet
 - Apache Virtual Hosts
 - Auto-deployed from GitHub via pull script (deploy.sh)
-
-## URLS
-
-- https://kylacse135.site
-- https://kylacse135.site/members/kylama.html
 
 ## Password Protection
 
