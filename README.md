@@ -14,9 +14,7 @@ https://kylacse135.site
 
 ## Details of Github Auto Deploy Setup
 
-- Hosted on DigitalOcean Droplet
-- Apache Virtual Hosts
-- Auto-deployed from GitHub via pull script (deploy.sh)
+To set up my site to deploy from Github, I first copied the files from my server into an empty repository on Github, then pulled from that repository to my local machine. Then, I also pulled from the same Github repository to my server, deleting the files that existed before. To make sure that my site had automatic deployments that reflected changes pushed from my local machine, I created a deploy.sh file and wrote a script that pulled changes from main. I had to set up Github Actions with secrets containing my Droplet's IP Address, SSH key, and username to make sure that the script ran automatically after a push to the repository.
 
 ## Password Protection
 
