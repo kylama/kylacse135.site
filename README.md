@@ -12,7 +12,7 @@ E95%r9qeNK%uX#
 
 https://kylacse135.site
 
-## Deployment
+## Details of Github Auto Deploy Setup
 
 - Hosted on DigitalOcean Droplet
 - Apache Virtual Hosts
