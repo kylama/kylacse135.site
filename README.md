@@ -18,8 +18,11 @@ To set up my site to deploy from Github, I first copied the files from my server
 
 ## Username/Password for Site Login
 
-- Username: kyla
-- Password: 49H&8#i^8eV%m!
+- My Username: kyla
+- My Password: 49H&8#i^8eV%m!
+
+- Grader Username: grader
+- Grader Password: Y9zkTyg$6mo^%!
 
 ## Summary of Changes to HTML file in DevTools after Compression
 
