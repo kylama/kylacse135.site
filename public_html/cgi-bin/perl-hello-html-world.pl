@@ -11,7 +11,7 @@ print "</head>";
 print "<body>";
 
 print "<h1 align=center>Kyla's Hello HTML World</h1><hr/>";
-print "<p>Hello World, from Kyla</p>";
+print "<p>Hello World! From Kyla</p>";
 print "<p>This page was generated with the Perl programming langauge</p>";
 
 $date = localtime();
