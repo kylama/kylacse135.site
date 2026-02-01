@@ -2,7 +2,7 @@
 require 'cgi'
 
 cgi = CGI.new
-user_data = cgi['user-data']
+user_data = cgi['user_data']
 
 if ENV['REQUEST_METHOD'] == 'POST' && !user_data.empty?
     cookie = CGI::Cookie.new('name' => 'stored_info', 'value' => user_data, 'path' => '/')
