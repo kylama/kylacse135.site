@@ -17,6 +17,9 @@ print "gtag('js', new Date());";
 print "gtag('config', 'G-E1T0CZQWXH');";
 print "</script>";
 
+print "<script src='https://cdn.logr-in.com/LogRocket.min.js' crossorigin='anonymous'></script>";
+print "<script>window.LogRocket && window.LogRocket.init('inhjvb/kylacse135site');</script>";
+
 print "</head>";
 
 print "<body>";

@@ -16,6 +16,9 @@ my $google_tag = <<'TAG';
 
   gtag('config', 'G-E1T0CZQWXH');
 </script>
+
+<script src="https://cdn.logr-in.com/LogRocket.min.js" crossorigin="anonymous"></script>
+<script>window.LogRocket && window.LogRocket.init('inhjvb/kylacse135site');</script>
 TAG
 
 # CGI.pm Method
