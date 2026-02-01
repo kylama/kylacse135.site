@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 require 'date'
 
-puts "Content-Type: type/html\n"
+puts "Content-Type: text/html\n"
 puts <<~HTML
 <!DOCTYPE html>
 <html>
