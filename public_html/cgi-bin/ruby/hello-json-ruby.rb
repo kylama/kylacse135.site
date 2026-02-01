@@ -2,7 +2,7 @@
 require 'json'
 require 'date'
 
-puts "Content-Type: application/json\n"
+puts "Content-Type: application/json\n\n"
 
 data = {
     title: "Ruby Hello JSON",
