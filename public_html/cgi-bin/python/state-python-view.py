@@ -1,0 +1,26 @@
+#!/usr/bin/python3
+import os
+from http import cookies
+
+print("Content-Type: text/html\n")
+c = cookies.SimpleCookie(os.environ.get("HTTP_COOKIE", ''))
+info = c["stored-info"].value if "stored_info" in c else "No data currently saved in the session."
+
+print(f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Python State Management - View</title>
+</head>
+<body>
+    <h1 style="text-align: center">Server-Side Stored Data</h1><hr/>
+    <p><strong>Stored Data:</strong> {info}</p>
+    <hr>
+    <nav>
+        <a href="state-python-set.py">Change Data</a> | 
+        <a href="state-python-clear.py">Clear Session Data</a>
+    </nav>
+</body>
+</html>
+""")

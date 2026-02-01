@@ -12,7 +12,6 @@ $info = $_SESSION['stored_info'] ?? "No data currently saved in the session.";
 <body>
     <h1 style="text-align: center">Server-Side Stored Data</h1><hr/>
     <p><strong>Stored Data:</strong> <?php echo $info; ?></p>
-    
     <hr>
     <nav>
         <a href="state-php-set.php">Change Data</a> | 
