@@ -3,7 +3,20 @@ header("Content-Type: text/html");
 ?>
 <!DOCTYPE html>
 <html>
-<head><title>PHP Hello HTML</title></head>
+<head>
+    <title>PHP Hello HTML</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1T0CZQWXH"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-E1T0CZQWXH');
+    </script>
+</head>
+
 <body>
     <h1 style="text-align: center">Hello, PHP!</h1><hr/>
     <p>Hello! From Kyla</p>

@@ -26,6 +26,15 @@ print(f"""
 <head>
     <meta charset="UTF-8">
     <title>Python State Management - Set</title>
+      
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1T0CZQWXH"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+
+    gtag('config', 'G-E1T0CZQWXH');
+    </script>
 </head>
 <body>
     <h1 style="text-align: center">Save Data to Session (Python)</h1><hr/>

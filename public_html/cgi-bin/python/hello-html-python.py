@@ -6,7 +6,19 @@ print("Content-Type: text/html\n")
 print(f"""
 <!DOCTYPE html>
 <html>
-<head><title>Python Hello HTML</title></head>
+<head>
+    <title>Python Hello HTML</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-E1T0CZQWXH"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+
+    gtag('config', 'G-E1T0CZQWXH');
+    </script>
+</head>
+
 <body>
     <h1 style="text-align: center">Hello, Python!</h1><hr/>
     <p>Hello! From Kyla</p>

@@ -7,8 +7,22 @@ use CGI qw/:standard/;
 print "Cache-Control: no-cache\n";
 print header;
 
+my $google_tag = <<'TAG';
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-E1T0CZQWXH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-E1T0CZQWXH');
+</script>
+TAG
+
 # CGI.pm Method
-print start_html("Environment Variables");
+print start_html(
+   -title => "Environment Variables",
+   -head => $google_tag
+);
 
 print "<h1 align='center'>Environment Variables</h1><hr />";
 

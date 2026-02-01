@@ -6,8 +6,19 @@ print "Content-Type: text/html\n\n";
 print "<!DOCTYPE html>";
 print "<html>";
 print "<head>";
+
 print "<title>Kyla's Hello CGI World</title>";
+
+print "<script async src='https://www.googletagmanager.com/gtag/js?id=G-E1T0CZQWXH'></script>";
+print "<script>";
+print "window.dataLayer = window.dataLayer || [];";
+print "function gtag(){dataLayer.push(arguments);}";
+print "gtag('js', new Date());";
+print "gtag('config', 'G-E1T0CZQWXH');";
+print "</script>";
+
 print "</head>";
+
 print "<body>";
 
 print "<h1 align=center>Kyla's Hello HTML World</h1><hr/>";
