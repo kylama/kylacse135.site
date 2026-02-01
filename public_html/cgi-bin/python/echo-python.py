@@ -6,18 +6,24 @@ from datetime import datetime
 
 print("Content-Type: applciation/json\n")
 
-method = os.environ.get('REQUEST_METHOD', 'GET')
-payload = ""
+raw_input = sys.stdin.read()
+content_type = os.environ.get('CONTENT_TYPE', '')
 
-if method in ['POST', 'PUT', 'DELETE']:
-    payload = sys.stdin.read()
+payload = {}
+if "application/json" in content_type:
+    try:
+        payload = json.loads(raw_input)
+    except:
+        payload = {"error": "Invalid JSON"}
+else:
+    payload = raw_input
 
 response = {
     "hostname": os.uname()[1],
     "datetime": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
     "user_agent": os.environ.get('HTTP_USER_AGENT'),
     "IP_address": os.environ.get('REMOTE_ADDR'),
-    "method": method,
+    "method": os.environ.get('REQUEST_METHOD'),
     "payload": payload
 }
 
