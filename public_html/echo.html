@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Echo Form</title>
+  </head>
+  <body>
+    <h1>Echo Form</h1>
+    <form id="echoForm" action="cgi-bin/php/echo-php.php" method="POST">
+      <label for="language">Target Language:</label>
+      <select id="language" name="language">
+        <option value="cgi-bin/php/echo-php.php">PHP</option>
+      </select>
+
+      <label for="method">HTTP Method:</label>
+      <select id="method" name="method">
+        <option value="GET">GET</option>
+        <option value="POST" selected>POST</option>
+        <option value="PUT">PUT</option>
+        <option value="DELETE">DELETE</option>
+      </select>
+
+      <label for="encoding">Encoding:</label>
+      <select id="encoding" name="encoding">
+        <option value="application/x-www-form-urlencoded">URL Encoded</option>
+        <option value="application/json">JSON</option>
+      </select>
+
+      <br /><br />
+      <input type="text" name="sample_data" placeholder="Enter some text" />
+      <button type="submit" id="submitBtn">Submit Request</button>
+    </form>
+
+    <div id="responseOutput">
+      <h3>Response:</h3>
+      <pre id="rawOutput">Results will appear here...</pre>
+    </div>
+
+    <script>
+      document
+        .getElementById("echoForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          const form = e.target;
+          const url = document.getElementById("language").value;
+          const method = document.getElementById("method").value;
+          const encoding = document.getElementById("encoding").value;
+
+          const formData = new FormData(form);
+          const data = Object.fromEntries(formData.entries());
+
+          let bodyContent;
+          let headers = {};
+
+          if (method === "GET") {
+            const queryString = new URLSearchParams(data).toString();
+            fetch(`${url}?${queryString}`, { method: "GET" })
+              .then((res) => res.text())
+              .then(
+                (text) =>
+                  (document.getElementById("rawOutput").textContent = text),
+              );
+          } else {
+            if (encoding === "application/json") {
+              headers["Content-Type"] = "application/json";
+              bodyContent = JSON.stringify(data);
+            } else {
+              headers["Content-Type"] = "application/x-www-form-urlencoded";
+              bodyContent = new URLSearchParams(data).toString();
+            }
+
+            fetch(url, {
+              method: method,
+              headers: headers,
+              body: bodyContent,
+            })
+              .then((res) => res.text())
+              .then(
+                (text) =>
+                  (document.getElementById("rawOutput").textContent = text),
+              );
+          }
+        });
+    </script>
+  </body>
+</html>
