@@ -4,7 +4,7 @@ from http import cookies
 
 print("Content-Type: text/html\n")
 c = cookies.SimpleCookie(os.environ.get("HTTP_COOKIE", ''))
-info = c["stored-info"].value if "stored_info" in c else "No data currently saved in the session."
+info = c["stored_info"].value if "stored_info" in c else "No data currently saved in the session."
 
 print(f"""
 <!DOCTYPE html>

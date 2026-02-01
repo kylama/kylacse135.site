@@ -12,8 +12,8 @@ if os.environ.get('REQUEST_METHOD') == 'POST':
         user_info = post_data['user_data'][0]
 
         c = cookies.SimpleCookie()
-        c['stored-info'] = user_info
-        c['stored-info']['path'] = '/'
+        c['stored_info'] = user_info
+        c['stored_info']['path'] = '/'
 
         print(c.output())
         print("Location: state-python-view.py\n")
@@ -30,7 +30,7 @@ print(f"""
 <body>
     <h1 style="text-align: center">Save Data to Session (Python)</h1><hr/>
     <form action="state-python-set.py" method="POST">
-        <p>Enter information to store on the server:</p><br><br>
+        <p>Enter information to store on the server:</p><br>
         <input type="text" id="user_data" name="user_data" required>
         <button type="submit">Save State</button>
     </form>

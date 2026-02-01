@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_data'])) {
 <body>
     <h1 style="text-align: center">Save Data to Session (PHP)</h1><hr/>
     <form action="state-php-set.php" method="POST">
-        <p for="user_data">Enter information to store on the server:</p><br><br>
+        <p for="user_data">Enter information to store on the server:</p><br>
         <input type="text" id="user_data" name="user_data" required>
         <button type="submit">Save State</button>
     </form>
