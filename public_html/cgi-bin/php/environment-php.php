@@ -7,7 +7,7 @@ header("Content-Type: text/html");
 <hr>
 <?php
 foreach ($_SERVER as $key => $value) {
-    echo "<p><strong>$key:</strong> $value</p>";
+    echo "<strong>$key:</strong> $value<br />";
 }
 ?>
 </body></html>
