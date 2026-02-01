@@ -2,7 +2,7 @@
 import os
 from datetime import datetime
 
-print("Content-Type: text/html\n\n")
+print("Content-Type: text/html\n")
 print(f"""
 <!DOCTYPE html>
 <html>

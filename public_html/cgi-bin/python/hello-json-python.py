@@ -3,7 +3,7 @@ import os
 import json
 from datetime import datetime
 
-print("Content-Type: application/json\n\n")
+print("Content-Type: application/json\n")
 data = {
     "title": "Python Hello JSON",
     "heading": "Hello, Python!",
