@@ -15,7 +15,7 @@ recovered_data = nil
 if cookie_data
     message = "Found data via Cookie: <b>#{cookie_data}</b>"
 elsif fp_id && !fp_id.empty?
-    if File.exists(session_file)
+    if File.exist?(session_file)
         sessions = JSON.parse(File.read(session_file))
         recovered_data = sessions[fp_id]
     end
