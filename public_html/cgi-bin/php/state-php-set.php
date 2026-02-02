@@ -1,7 +1,26 @@
 <?php
 session_start();
+
+$cgi_bin_dir = dirname(__DIR__);
+$session_file = $cgi_bin_dir . "/sessions.json";
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_data'])) {
-    $_SESSION['stored_info'] = htmlspecialchars($_POST['user_data']);
+    $user_data = htmlspecialchars($_POST['user_data']);
+    $fp_id = $_POST['fingerprint_id'] ?? '';
+
+    $_SESSION['stored_info'] = $user_data;
+
+    setcookie("stored_info", $user_data, time() + 3600, "/");
+
+    if(!empty($fp_id)) {
+        $sessions = [];
+        if (file_exists($session_file)) {
+            $sessions = json_decode(file_get_contents($session_file), true) ?? [];
+        }
+        $sessions[$fp_id] = $user_data;
+        file_put_contents($session_file, json_encode($sessions));
+    }
+
     header("Location: state-php-view.php");
     exit();
 }
@@ -28,21 +47,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_data'])) {
 
     <script defer src="https://cloud.umami.is/script.js" data-website-id="c551fd6b-f42b-4084-af35-65fec427992b"></script>
 
-    <script src='https://openfpcdn.io/fingerprintjs/v5' defer></script>
+    <script src='https://openfpcdn.io/fingerprintjs/v3/iife.min.js'></script>
     <script>
         window.addEventListener('load', () => {
-            const fpPromise = FingerprintJS.load();
+            if (typeof FingerprintJS !== 'undefined') {
+                const fpPromise = FingerprintJS.load();
+                fpPromise
+                    .then(fp => fp.get())
+                    .then(result => {
+                        const visitorId = result.visitorId;
+      
+                        const fpInput = document.getElementById('fingerprint_input');
+                        if (fpInput) {
+                            fpInput.value = visitorId;
+                        }
 
-            fpPromise
-                .then(fp => fp.get())
-                .then(result => {
-                    const visitorId = result.visitorId;
-                    const fpInput = document.getElementById('fingerprint_input');
-                    if (fpInput) {
-                        fpInput.value = visitorId;
-                    }
-                    console.log("Visitor Identifier:", visitorId);
-                });
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const messageText = document.body.innerText;
+                        if (messageText.includes("Identifying your device") && !urlParams.has('fp')) {
+                            window.location.search = '?fp=' + visitorId;
+                        }
+      
+                        console.log("Visitor Identifier:", visitorId);
+                    })
+                    .catch(error => console.error("Fingerprint error:", error));
+            } else {
+                console.error("FingerprintJS library failed to load.");
+            }
         });
     </script>
 </head>
@@ -50,6 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_data'])) {
 <body>
     <h1 style="text-align: center">Save Data to Session (PHP)</h1><hr/>
     <form action="state-php-set.php" method="POST">
+        <input type="hidden" id="fingerprint_input" name="fingerprint_id" value="">
+
         <p for="user_data">Enter information to store on the server:</p><br>
         <input type="text" id="user_data" name="user_data" required>
         <button type="submit">Save State</button>

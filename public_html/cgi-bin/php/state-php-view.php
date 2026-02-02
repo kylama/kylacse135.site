@@ -1,6 +1,33 @@
 <?php
 session_start();
-$info = $_SESSION['stored_info'] ?? "No data currently saved in the session.";
+
+$cgi_bin_dir = dirname(__DIR__);
+$session_file = $cgi_bin_dir . "/sessions.json";
+
+$info = $_SESSION['stored_info'] ?? null;
+$method = "Session";
+
+if (!$info && isset($_COOKIE['stored_info'])) {
+    $info = $_COOKIE['stored_info'];
+    $method = "Persistent Cookie";
+}
+
+$fp_id = $_GET['fp'] ?? null;
+if (!$info && $fp_id) {
+    if (file_exists($session_file)) {
+        $sessions = json_decode(file_get_contents($session_file), true) ?? [];
+        if (isset($sessions[$fp_id])) {
+            $info = $sessions[$fp_id];
+            $method = "Fingerprint Shadow Session";
+        }
+    }
+}
+
+if ($info) {
+    $display_message = "Found data via $method: <b>" . htmlspecialchars($info) . "</b>";
+} else {
+    $display_message = "Identifying your device...";
+}
 ?>
 
 <!DOCTYPE html>
@@ -24,28 +51,40 @@ $info = $_SESSION['stored_info'] ?? "No data currently saved in the session.";
 
     <script defer src="https://cloud.umami.is/script.js" data-website-id="c551fd6b-f42b-4084-af35-65fec427992b"></script>
 
-    <script src='https://openfpcdn.io/fingerprintjs/v5' defer></script>
+    <script src='https://openfpcdn.io/fingerprintjs/v3/iife.min.js'></script>
     <script>
         window.addEventListener('load', () => {
-            const fpPromise = FingerprintJS.load();
+            if (typeof FingerprintJS !== 'undefined') {
+                const fpPromise = FingerprintJS.load();
+                fpPromise
+                    .then(fp => fp.get())
+                    .then(result => {
+                        const visitorId = result.visitorId;
+      
+                        const fpInput = document.getElementById('fingerprint_input');
+                        if (fpInput) {
+                            fpInput.value = visitorId;
+                        }
 
-            fpPromise
-                .then(fp => fp.get())
-                .then(result => {
-                    const visitorId = result.visitorId;
-                    const fpInput = document.getElementById('fingerprint_input');
-                    if (fpInput) {
-                        fpInput.value = visitorId;
-                    }
-                    console.log("Visitor Identifier:", visitorId);
-                });
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const messageText = document.body.innerText;
+                        if (messageText.includes("Identifying your device") && !urlParams.has('fp')) {
+                            window.location.search = '?fp=' + visitorId;
+                        }
+      
+                        console.log("Visitor Identifier:", visitorId);
+                    })
+                    .catch(error => console.error("Fingerprint error:", error));
+            } else {
+                console.error("FingerprintJS library failed to load.");
+            }
         });
     </script>
 </head>
 
 <body>
     <h1 style="text-align: center">Server-Side Stored Data</h1><hr/>
-    <p><strong>Stored Data:</strong> <?php echo $info; ?></p>
+    <p><strong>Stored Data:</strong> <?php echo $display_message; ?></p>
     <hr>
     <nav>
         <a href="state-php-set.php">Change Data</a> | 
