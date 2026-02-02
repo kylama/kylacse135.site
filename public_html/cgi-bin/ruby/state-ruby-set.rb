@@ -4,7 +4,7 @@ require 'json'
 
 cgi = CGI.new
 cgi_bin_dir = File.expand_path('..', File.dirname(__FILE__))
-session_file = File.json(cgi_bin_dir, 'sessions.json')
+session_file = File.join(cgi_bin_dir, 'sessions.json')
 
 if cgi.request_method == "POST"
     user_data = cgi['user_data']

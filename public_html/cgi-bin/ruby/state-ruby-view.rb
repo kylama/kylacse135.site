@@ -4,9 +4,9 @@ require 'json'
 
 cgi = CGI.new
 cgi_bin_dir = File.expand_path('..', File.dirname(__FILE__))
-session_file = File.json(cgi_bin_dir, 'sessions.json')
+session_file = File.join(cgi_bin_dir, 'sessions.json')
 
-cookie_data = cgi.cookies['stored_info'] ? cgi.cookies['stored_info'][0] : nil
+cookie_data = cgi.cookies['stored_info'] ? cgi.cookies['stored_info'].value[0] : nil
 
 fp_id = cgi['fp']
 recovered_data = nil
