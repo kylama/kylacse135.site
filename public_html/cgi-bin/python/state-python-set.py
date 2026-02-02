@@ -56,7 +56,7 @@ print(f"""
       
     <script defer src="https://cloud.umami.is/script.js" data-website-id="c551fd6b-f42b-4084-af35-65fec427992b"></script>
       
-    <script src='https://openfpcdn.io/fingerprintjs/v5' defer></script>
+    <script src='https://openfpcdn.io/fingerprintjs/v3' defer></script>
     <script>
         window.addEventListener('load', () => {{
             const fpPromise = FingerprintJS.load();
