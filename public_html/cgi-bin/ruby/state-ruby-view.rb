@@ -21,7 +21,7 @@ elsif fp_id && !fp_id.empty?
     end
 
     if recovered_data
-        message = "Cookie, missing, Fingerprint recognized. Recovered: <b>#{recovered_data}</b>"
+        message = "Cookie missing, Fingerprint recognized. Recovered: <b>#{recovered_data}</b>"
     else
         message = "No record found for this fingerprint."
     end
