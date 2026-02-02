@@ -61,7 +61,7 @@ print(f"""
                     .then(result => {{
                         const visitorId = result.visitorId;
       
-                        const fpInput = document.getElementById('fingerprint_input);
+                        const fpInput = document.getElementById('fingerprint_input');
                         if (fpInput) {{
                             fpInput.value = visitorId;
                         }}
