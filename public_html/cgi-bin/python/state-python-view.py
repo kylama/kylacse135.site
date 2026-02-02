@@ -26,7 +26,7 @@ elif fp_id:
 else:
     message = "Identifying your device..."
 
-print("Content-Type: text/html\n")
+print("Content-Type: text/html\n\n")
 print(f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -67,7 +67,7 @@ print(f"""
 </head>
 <body>
     <h1 style="text-align: center">Server-Side Stored Data</h1><hr/>
-    <p><strong>Stored Data:</strong> {message}</p>
+    <p><strong>Stored Data:</strong> <br />{message}</p>
     <hr>
     <nav>
         <a href="state-python-set.py">Change Data</a> | 

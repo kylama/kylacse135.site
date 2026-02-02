@@ -33,7 +33,7 @@ if os.environ.get('REQUEST_METHOD') == 'POST':
     print("Location: state-python-view.py\n")
     sys.exit()
 
-print("Content-Type: text/html\n")
+print("Content-Type: text/html\n\n")
 print(f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -76,6 +76,8 @@ print(f"""
 <body>
     <h1 style="text-align: center">Save Data to Session (Python)</h1><hr/>
     <form action="state-python-set.py" method="POST">
+        <input type="hidden" id="fingerprint_input" name="fingerprint_id" value="">
+      
         <p>Enter information to store on the server:</p><br>
         <input type="text" id="user_data" name="user_data" required>
         <button type="submit">Save State</button>
