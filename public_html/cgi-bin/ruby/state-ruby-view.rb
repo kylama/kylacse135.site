@@ -6,7 +6,8 @@ cgi = CGI.new
 cgi_bin_dir = File.expand_path('..', File.dirname(__FILE__))
 session_file = File.join(cgi_bin_dir, 'sessions.json')
 
-cookie_data = (cgi.cookies['stored_info'] && cgi.cookies['stored_info'].value) ? cgi.cookies['stored_info'].value[0] : nil
+cookie_obj = cgi.cookies['stored_info']
+cookie_data = (cookie_obj.respond_to?(:value) && cookie_obj.value) ? cookie_obj.value[0] : nil
 
 fp_id = cgi['fp']
 recovered_data = nil
