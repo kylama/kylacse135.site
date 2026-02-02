@@ -1,9 +1,32 @@
 #!/usr/bin/ruby
 require 'cgi'
+require 'json'
 
 cgi = CGI.new
-cookie = cgi.cookies['stored_info']
-info = cookie.empty? ? "No data currently saved in the session." : cookie.value[0]
+cgi_bin_dir = File.expand_path('..', File.dirname(__FILE__))
+session_file = File.json(cgi_bin_dir, 'sessions.json')
+
+cookie_data = cgi.cookies['stored_info'] ? cgi.cookies['stored_info'][0] : nil
+
+fp_id = cgi['fp']
+recovered_data = nil
+
+if cookie_data
+    message = "Found data via Cookie: <b>#{cookie_data}</b>"
+elsif fp_id && !fp_id.empty?
+    if File.exists(session_file)
+        sessions = JSON.parse(File.read(session_file))
+        recovered_data = sessions[fp_id]
+    end
+
+    if recovered_data
+        message = "Cookie, missing, Fingerprint recognized. Recovered: <b>#{recovered_data}</b>"
+    else
+        message = "No record found for this fingerprint."
+    end
+else
+    message = "Identifying your device..."
+end
 
 puts "Content-Type: text/html\n\n"
 puts <<~HTML
@@ -27,26 +50,39 @@ puts <<~HTML
 
     <script defer src="https://cloud.umami.is/script.js" data-website-id="c551fd6b-f42b-4084-af35-65fec427992b"></script>
 
+    <script src='https://openfpcdn.io/fingerprintjs/v3/iife.min.js'></script>
     <script>
         window.addEventListener('load', () => {
-            const fpPromise = FingerprintJS.load();
+            if (typeof FingerprintJS !== 'undefined') {
+                const fpPromise = FingerprintJS.load();
+                fpPromise
+                    .then(fp => fp.get())
+                    .then(result => {
+                        const visitorId = result.visitorId;
+      
+                        const fpInput = document.getElementById('fingerprint_input');
+                        if (fpInput) {
+                            fpInput.value = visitorId;
+                        }
 
-            fpPromise
-                .then(fp => fp.get())
-                .then(result => {
-                    const visitorId = result.visitorId;
-                    const fpInput = document.getElementById('fingerprint_input');
-                    if (fpInput) {
-                        fpInput.value = visitorId;
-                    }
-                    console.log("Visitor Identifier:", visitorId);
-                });
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const messageText = document.body.innerText;
+                        if (messageText.includes("Identifying your device") && !urlParams.has('fp')) {
+                            window.location.search = '?fp=' + visitorId;
+                        }
+      
+                        console.log("Visitor Identifier:", visitorId);
+                    })
+                    .catch(error => console.error("Fingerprint error:", error));
+            } else {
+                console.error("FingerprintJS library failed to load.");
+            }
         });
     </script>
 </head>
 <body>
     <h1 style="text-align: center">Server-Side Stored Data</h1><hr/>
-    <p><strong>Stored Data:</strong> #{info}</p>
+    <p><strong>Stored Data:</strong> #{message}</p>
     <hr>
     <nav>
         <a href="state-ruby-set.rb">Change Data</a> | 
