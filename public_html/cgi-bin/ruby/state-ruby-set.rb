@@ -29,6 +29,23 @@ else
         <script>window.LogRocket && window.LogRocket.init('inhjvb/kylacse135site');</script>
 
         <script defer src="https://cloud.umami.is/script.js" data-website-id="c551fd6b-f42b-4084-af35-65fec427992b"></script>
+
+        <script>
+            window.addEventListener('load', () => {
+                const fpPromise = FingerprintJS.load();
+
+                fpPromise
+                    .then(fp => fp.get())
+                    .then(result => {
+                        const visitorId = result.visitorId;
+                        const fpInput = document.getElementById('fingerprint_input');
+                        if (fpInput) {
+                            fpInput.value = visitorId;
+                        }
+                        console.log("Visitor Identifier:", visitorId);
+                    });
+            });
+        </script>
     </head>
     <body>
         <h1 style="text-align: center">Save Data to Session (Ruby)</h1><hr/>
