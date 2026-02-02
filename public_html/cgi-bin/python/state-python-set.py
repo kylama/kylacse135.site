@@ -5,7 +5,8 @@ import urllib.parse
 import json
 from http import cookies
 
-SESSION_FILE = "sessions.json"
+cgi_bin_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SESSION_FILE = os.path.join(cgi_bin_dir, "sessions.json")
 
 if os.environ.get('REQUEST_METHOD') == 'POST':
     storage = sys.stdin.read()

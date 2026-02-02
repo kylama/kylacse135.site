@@ -2,6 +2,9 @@
 import os, json, urllib.parse
 from http import cookies
 
+cgi_bin_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SESSION_FILE = os.path.join(cgi_bin_dir, "sessions.json")
+
 c = cookies.SimpleCookie(os.environ.get("HTTP_COOKIE", ''))
 cookie_data = c.get("stored_info").value if c.get("stored_info") else None
 
@@ -14,8 +17,8 @@ message = ""
 if cookie_data:
     message = f"Found data via Cookie: <b>{cookie_data}</b>"
 elif fp_id:
-    if os.path.exists("sessions.json"):
-        with open("sessions.json", "r") as f:
+    if os.path.exists(SESSION_FILE):
+        with open(SESSION_FILE, "r") as f:
             sessions = json.load(f)
             recovered_data = sessions.get(fp_id)
 
