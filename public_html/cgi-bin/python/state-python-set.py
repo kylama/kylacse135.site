@@ -2,22 +2,36 @@
 import os
 import sys
 import urllib.parse
+import json
 from http import cookies
+
+SESSION_FILE = "sessions.json"
 
 if os.environ.get('REQUEST_METHOD') == 'POST':
     storage = sys.stdin.read()
     post_data = urllib.parse.parse_qs(storage)
 
-    if 'user_data' in post_data:
-        user_info = post_data['user_data'][0]
+    user_data = post_data.get('user_data', [''])[0]
+    fp_id = post_data.get('fingerprint_id', [''])[0]
 
-        c = cookies.SimpleCookie()
-        c['stored_info'] = user_info
-        c['stored_info']['path'] = '/'
+    sessions = {}
+    if os.path.exists(SESSION_FILE):
+        with open(SESSION_FILE, "r") as f:
+            try: sessions = json.load(f)
+            except: sessions = {}
 
-        print(c.output())
-        print("Location: state-python-view.py\n")
-        sys.exit()
+    if fp_id:
+        sessions[fp_id] = user_data
+        with open(SESSION_FILE, "w") as f:
+            json.dump(sessions, f)
+
+    c = cookies.SimpleCookie()
+    c['stored_info'] = user_data
+    c['stored_info']['path'] = '/'
+
+    print(c.output())
+    print("Location: state-python-view.py\n")
+    sys.exit()
 
 print("Content-Type: text/html\n")
 print(f"""
