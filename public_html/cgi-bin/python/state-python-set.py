@@ -56,21 +56,33 @@ print(f"""
       
     <script defer src="https://cloud.umami.is/script.js" data-website-id="c551fd6b-f42b-4084-af35-65fec427992b"></script>
       
-    <script src='https://openfpcdn.io/fingerprintjs/v3' defer></script>
+    <script src='https://openfpcdn.io/fingerprintjs/v3/iife.min.js'></script>
     <script>
         window.addEventListener('load', () => {{
-            const fpPromise = FingerprintJS.load();
+            if (typeof FingerprintJS !== 'undefined') {{
+                const fpPromise = FingerprintJS.load();
+                fpPromise
+                    .then(fp => fp.get())
+                    .then(result => {{
+                        const visitorId = result.visitorId;
+      
+                        const fpInput = document.getElementById('fingerprint_input);
+                        if (fpInput) {{
+                            fpInput.value = visitorId;
+                        }}
 
-            fpPromise
-                .then(fp => fp.get())
-                .then(result => {{
-                    const visitorId = result.visitorId;
-                    const fpInput = document.getElementById('fingerprint_input');
-                    if (fpInput) {{
-                        fpInput.value = visitorId;
-                    }}
-                    console.log("Visitor Identifier:", visitorId);
-                }});
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const messageText = document.body.innerText;
+                        if (messageText.includes("Identifying your device") && !urlParams.has('fp')) {{
+                            window.location.search = '?fp=' + visitorId;
+                        }}
+      
+                        console.log("Visitor Identifier:", visitorId);
+                    }})
+                    .catch(error => console.error("Fingerprint error:", error));
+            }} else {{
+                console.error("FingerprintJS library failed to load.");
+            }}
         }});
     </script>
 </head>
