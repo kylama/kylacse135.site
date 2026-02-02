@@ -20,7 +20,7 @@ print "</script>";
 print "<script src='https://cdn.logr-in.com/LogRocket.min.js' crossorigin='anonymous'></script>";
 print "<script>window.LogRocket && window.LogRocket.init('inhjvb/kylacse135site');</script>";
 
-print "<script defer src='https://cloud.umami.is/script.js' data-website-id='c551fd6b-f42b-4084-af35-65fec427992b'></script>"
+print "<script defer src='https://cloud.umami.is/script.js' data-website-id='c551fd6b-f42b-4084-af35-65fec427992b'></script>";
 
 print "</head>";
 
