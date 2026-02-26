@@ -10,7 +10,7 @@
     let sessionID = sessionStorage.getItem("cse135_session_id");
     if (!sessionID) {
       sessionID =
-        "session-" + Math.random().toString(36).substr(2, 9) + "-" + Date.now();
+        "session-" + Math.random().toString(36).slice(2, 11) + "-" + Date.now();
       sessionStorage.setItem("cse135_session_id", sessionID);
     }
     return sessionID;
@@ -40,7 +40,11 @@
   }
 
   function getStaticAndPerf() {
-    const perf = window.performance.timing;
+    const navEntries = performance.getEntriesByType("navigation");
+    const navEntry = navEntries.length > 0 ? navEntries[0] : null;
+
+    const perf = navEntry || window.performance.timing;
+
     return {
       type: "static_and_performance",
       userEntered: entryTime,
@@ -57,9 +61,11 @@
       },
       performance: {
         timingObject: perf,
-        start: perf.navigationStart,
-        end: perf.loadEventEnd,
-        totalLoadTime: perf.loadEventEnd - perf.navigationStart,
+        start: navEntry ? navEntry.startTime : perf.navigationStart,
+        end: navEntry ? navEntry.loadEventEnd : perf.loadEventEnd,
+        totalLoadTime: navEntry
+          ? navEntry.duration
+          : perf.loadEventEnd - perf.navigationStart,
       },
     };
   }
@@ -104,7 +110,7 @@
   window.onerror = (msg, url, line) => logActivity("error", { msg, url, line });
 
   function transmit(type) {
-    const endpoint = "https://collector.kylacse135.site/collect";
+    const endpoint = "https://collector.kylacse135.site/collect.php";
     const payload = {
       sessionId: getSessionId(),
       type: type,
@@ -133,6 +139,10 @@
 
   window.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {
+      logActivity("exit", {
+        url: window.location.href,
+        time: new Date().toISOString(),
+      });
       transmit("activity");
     }
   });
