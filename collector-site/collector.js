@@ -118,7 +118,7 @@
         sessionId: getSessionId(),
         type: type,
         exitTime: type === "activity" ? new Date().toISOString() : null,
-        date: type === "initial" ? getStaticAndPerf() : activityLog,
+        data: type === "initial" ? getStaticAndPerf() : activityLog,
       };
       console.log("Payload prepared:", payload); // Log 2
 
@@ -143,8 +143,9 @@
     }
   }
 
-  window.addEventListener("load", () => {
-    setTimeout(() => transmit("initial"), 100);
+  window.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM fully loaded and parsed. Initiating transmit");
+    setTimeout(() => transmit("initial"), 500);
   });
 
   window.addEventListener("visibilitychange", () => {
