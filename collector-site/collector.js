@@ -110,22 +110,32 @@
   window.onerror = (msg, url, line) => logActivity("error", { msg, url, line });
 
   function transmit(type) {
+    console.log("Transmission triggered for type:", type); // Log 1
     const endpoint = "https://collector.kylacse135.site/collect.php";
-    const payload = {
-      sessionId: getSessionId(),
-      type: type,
-      exitTime: type === "activity" ? new Date().toISOString() : null,
-      date: type === "initial" ? getStaticAndPerf() : activityLog,
-    };
 
-    const blob = new Blob([JSON.stringify(payload)], {
-      type: "application/json",
-    });
+    try {
+      const payload = {
+        sessionId: getSessionId(),
+        type: type,
+        exitTime: type === "activity" ? new Date().toISOString() : null,
+        date: type === "initial" ? getStaticAndPerf() : activityLog,
+      };
+      console.log("Payload prepared:", payload); // Log 2
 
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon(endpoint, blob);
-    } else {
-      fetch(endpoint, { method: "POST", body: blob, keepalive: true });
+      const blob = new Blob([JSON.stringify(payload)], {
+        type: "application/json",
+      });
+
+      if (navigator.sendBeacon) {
+        console.log("Using sendBeacon to:", endpoint); // Log 3
+        const success = navigator.sendBeacon(endpoint, blob);
+        console.log("sendBeacon success status:", success);
+      } else {
+        console.log("Using fetch to:", endpoint);
+        fetch(endpoint, { method: "POST", body: blob, keepalive: true });
+      }
+    } catch (e) {
+      console.error("Transmission failed in JS:", e);
     }
 
     if (type === "activity") {
