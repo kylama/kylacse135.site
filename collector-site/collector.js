@@ -74,9 +74,13 @@
     activityLog.push({
       type: type,
       timestamp: new Date().toISOString(),
-      page: window.location.pathname,
+      //   page: window.location.pathname,
       details: details,
     });
+
+    if (activityLog.length > 10) {
+      transmit("activity");
+    }
     resetIdleTimer();
   }
 
@@ -117,7 +121,7 @@
       const payload = {
         sessionId: getSessionId(),
         type: type,
-        exitTime: type === "activity" ? new Date().toISOString() : null,
+        // exitTime: type === "activity" ? new Date().toISOString() : null,
         data: type === "initial" ? getStaticAndPerf() : activityLog,
       };
       console.log("Payload prepared:", payload); // Log 2
