@@ -11,7 +11,7 @@ $id = $segments[1] ?? null;
 $valid_resources = ['static', 'performance', 'activity'];
 if (!in_array($resource, $valid_resources)) {
     http_response_code(404);
-    echo json_encode(["error" => "Invalid resource: Choose static, performance, or activity"]);
+    echo json_encode(["error" => "Invalid resource"]);
     exit;
 }
 
