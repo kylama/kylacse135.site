@@ -1,164 +1,137 @@
 (function () {
   "use strict";
 
-  let activityLog = [];
-  let idleTimer;
-  let idleStart;
-  const entryTime = new Date().toISOString();
+  const ENDPOINT = "https://collector.kylacse135.site/collect.php";
 
-  function getSessionId() {
-    let sessionID = sessionStorage.getItem("cse135_session_id");
-    if (!sessionID) {
-      sessionID =
-        "session-" + Math.random().toString(36).slice(2, 11) + "-" + Date.now();
-      sessionStorage.setItem("cse135_session_id", sessionID);
-    }
-    return sessionID;
+  let sessionId = sessionStorage.getItem("vhost_sid");
+  if (!sessionId) {
+    sessionId = "sn-" + Math.random().toString(36).substring(2, 15);
+    sessionStorage.setItem("vhost_sid", sessionId);
   }
 
-  function getFeatureDetection() {
-    const testEl = document.createElement("div");
-    testEl.id = "css-test";
-    testEl.style.display = "none";
-    document.body.appendChild(testEl);
-    const cssAllowed = window.getComputedStyle(testEl).display === "none";
-    document.body.removeChild(testEl);
-
-    let imagesAllowed = true;
-    const img = new Image();
-    img.src =
-      "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-    img.onerror = () => {
-      imagesAllowed = false;
-    };
-
-    return {
-      jsAllowed: true,
-      cssAllowed,
-      imagesAllowed,
-    };
-  }
-
-  function getStaticAndPerf() {
-    const navEntries = performance.getEntriesByType("navigation");
-    const navEntry = navEntries.length > 0 ? navEntries[0] : null;
-
-    const perf = navEntry || window.performance.timing;
-
-    return {
-      type: "static_and_performance",
-      userEntered: entryTime,
-      static: {
-        userAgent: navigator.userAgent,
-        language: navigator.language,
-        cookies: navigator.cookieEnabled,
-        features: getFeatureDetection(),
-        screen: { w: screen.width, h: screen.height },
-        window: { w: window.innerWidth, h: window.innerHeight },
-        connection: navigator.connection
-          ? navigator.connection.effectiveType
-          : "unknown",
-      },
-      performance: {
-        timingObject: perf,
-        start: navEntry ? navEntry.startTime : perf.navigationStart,
-        end: navEntry ? navEntry.loadEventEnd : perf.loadEventEnd,
-        totalLoadTime: navEntry
-          ? navEntry.duration
-          : perf.loadEventEnd - perf.navigationStart,
-      },
-    };
-  }
-
-  function logActivity(type, details) {
-    activityLog.push({
+  function transmit(type, data) {
+    const payload = {
       type: type,
-      timestamp: new Date().toISOString(),
-      //   page: window.location.pathname,
-      details: details,
+      session_id: sessionId,
+      payload: data,
+    };
+
+    const blob = new Blob([JSON.stringify(payload)], {
+      type: "application/json",
     });
 
-    if (activityLog.length > 10) {
-      transmit("activity");
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(ENDPOINT, blob);
+    } else {
+      fetch(ENDPOINT, { method: "POST", body: blob, keepalive: true });
     }
-    resetIdleTimer();
   }
 
-  function resetIdleTimer() {
-    if (idleStart) {
-      const duration = Date.now() - idleStart;
-      if (duration >= 2000) {
-        logActivity("idle_end", { durationMs: duration });
+  function collectStatic() {
+    const staticData = {
+      userAgent: navigator.userAgent,
+      language: navigator.language,
+      cookies: navigator.cookieEnabled,
+      jsEnabled: true,
+      imagesEnabled: !!document.createElement("canvas").getContext,
+      cssEnabled: (function () {
+        const test = document.createElement("div");
+        test.style.display = "none";
+        document.body.appendChild(test);
+        const isSet = getComputedStyle(test).display === "none";
+        document.body.removeChild(test);
+        return isSet;
+      })(),
+      screen: screen.width + "x" + screen.height,
+      window: window.innerWidth + "x" + window.innerHeight,
+      connection: navigator.connection
+        ? navigator.connection.effectiveType
+        : "unknown",
+      page: window.location.pathname,
+    };
+    transmit("static", staticData);
+  }
+
+  function collectPerformance() {
+    setTimeout(() => {
+      const [perf] = performance.getEntriesByType("navigation");
+      if (perf) {
+        transmit("performance", {
+          timing: perf,
+          start: perf.startTime,
+          end: perf.loadEventEnd,
+          total_load_ms: perf.loadEventEnd - perf.startTime,
+        });
       }
-      idleStart = null;
-    }
-    clearTimeout(idleTimer);
-    idleTimer = setTimeout(() => {
-      idleStart = Date.now();
-    }, 2000);
+    }, 200);
   }
 
-  window.addEventListener("mousemove", (e) =>
-    logActivity("mousemove", { x: e.clientX, y: e.clientY }),
-  );
-  window.addEventListener("click", (e) =>
-    logActivity("click", { button: e.button, x: e.clientX, y: e.clientY }),
-  );
-  window.addEventListener("keydown", (e) =>
-    logActivity("keydown", { key: e.key }),
-  );
-  window.addEventListener("scroll", () =>
-    logActivity("scroll", { x: window.scrollX, y: window.scrollY }),
-  );
+  function initActivityTracking() {
+    let lastInput = Date.now();
 
-  window.onerror = (msg, url, line) => logActivity("error", { msg, url, line });
-
-  function transmit(type) {
-    console.log("Transmission triggered for type:", type); // Log 1
-    const endpoint = "https://collector.kylacse135.site/collect.php";
-
-    try {
-      const payload = {
-        sessionId: getSessionId(),
-        type: type,
-        // exitTime: type === "activity" ? new Date().toISOString() : null,
-        data: type === "initial" ? getStaticAndPerf() : activityLog,
-      };
-      console.log("Payload prepared:", payload); // Log 2
-
-      const blob = new Blob([JSON.stringify(payload)], {
-        type: "application/json",
-      });
-
-      if (navigator.sendBeacon) {
-        console.log("Using sendBeacon to:", endpoint); // Log 3
-        const success = navigator.sendBeacon(endpoint, blob);
-        console.log("sendBeacon success status:", success);
-      } else {
-        console.log("Using fetch to:", endpoint);
-        fetch(endpoint, { method: "POST", body: blob, keepalive: true });
+    const logActivity = (name, details) => {
+      const now = Date.now();
+      if (now - lastInput >= 2000) {
+        transmit("activity", {
+          event: "idle_break",
+          duration: now - lastInput,
+          ended: now,
+        });
       }
-    } catch (e) {
-      console.error("Transmission failed in JS:", e);
-    }
+      lastInput = now;
 
-    if (type === "activity") {
-      activityLog = [];
-    }
+      transmit("activity", { event: name, ...details });
+    };
+
+    document.addEventListener("click", (e) => {
+      logActivity("click", { x: e.clientX, y: e.clientY, button: e.button });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      logActivity("keydown", { key: e.key });
+    });
+
+    document.addEventListener("keyup", (e) => {
+      logActivity("keyup", { key: e.key });
+    });
+
+    document.addEventListener("scroll", () => {
+      logActivity("scroll", { x: window.scrollX, y: window.scrollY });
+    });
+
+    window.onerror = (msg, src, line, col) => {
+      logActivity("error", { msg, src, line, col });
+    };
+
+    let throttle;
+    document.addEventListener("mousemove", (e) => {
+      if (!throttle) {
+        throttle = setTimeout(() => {
+          logActivity("mousemove", { x: e.clientX, y: e.clientY });
+          throttle = null;
+        }, 500);
+      }
+    });
+
+    window.addEventListener("pageshow", () =>
+      logActivity("page_enter", { url: location.href }),
+    );
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") {
+        logActivity("page_exit", { ts: Date.now() });
+      }
+    });
   }
 
-  window.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded and parsed. Initiating transmit");
-    setTimeout(() => transmit("initial"), 500);
-  });
+  const run = () => {
+    collectStatic();
+    collectPerformance();
+    initActivityTracking();
+  };
 
-  window.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "hidden") {
-      logActivity("exit", {
-        url: window.location.href,
-        time: new Date().toISOString(),
-      });
-      transmit("activity");
-    }
-  });
-});
+  if (document.readyState === "complete") {
+    run();
+  } else {
+    window.addEventListener("load", run);
+  }
+})();
