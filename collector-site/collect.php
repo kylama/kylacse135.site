@@ -50,7 +50,7 @@ try {
 
     $pdo = new PDO($dsn, $config['username'], $config['password'], $options);
 
-    $sql = "INSERT INTO activity_data (type, session_id, payload) 
+    $sql = "INSERT INTO analytics_log (type, session_id, payload) 
             VALUES (:type, :session_id, :payload)";
     
     $stmt = $pdo->prepare($sql);

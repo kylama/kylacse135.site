@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS activity_data (
+CREATE TABLE IF NOT EXISTS analytics_log (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     received_at DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     type        VARCHAR(32) NOT NULL COMMENT 'static, performance, activity',
