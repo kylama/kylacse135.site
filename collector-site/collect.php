@@ -4,6 +4,9 @@ $request_origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
 if ($request_origin === $allowed_origin) {
     header("Access-Control-Allow-Origin: $request_origin");
+} else {
+    http_response_code(403);
+    exit;
 }
 
 header("Access-Control-Allow-Methods: POST, OPTIONS");
