@@ -16,15 +16,25 @@
       payload: data,
     };
 
-    const blob = new Blob([JSON.stringify(payload)], {
-      type: "application/json",
-    });
+    const json = JSON.stringify(payload);
+    const blob = new Blob([json], { type: "application/json" });
 
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(ENDPOINT, blob);
-    } else {
-      fetch(ENDPOINT, { method: "POST", body: blob, keepalive: true });
+      if (navigator.sendBeacon(ENDPOINT, blob)) return;
     }
+
+    fetch(ENDPOINT, {
+      method: "POST",
+      body: json,
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+    }).catch(() => {
+      fetch(ENDPOINT, {
+        method: "POST",
+        body: json,
+        headers: { "Content-Type": "application/json" },
+      }).catch(() => {});
+    });
   }
 
   function collectStatic() {
