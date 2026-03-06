@@ -15,7 +15,7 @@ if (!in_array($resource, $valid_resources)) {
     exit;
 }
 
-$config = require __DIR__ . '/config.php';
+$config = require __DIR__ . '/../config.php';
 try {
     $dsn = "mysql:host={$config['host']};dbname={$config['dbname']};charset=utf8mb4";
     $pdo = new PDO($dsn, $config['username'], $config['password'], [
