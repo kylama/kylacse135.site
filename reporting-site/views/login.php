@@ -13,9 +13,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!DOCTYPE html>
-<html lang=“en”>
+<html lang="en">
 <head>
-	<meta charset=“UTF-8”>
+	<meta charset="UTF-8">
 	<title>Reporting Login</title>
 </head>
 <body>
@@ -25,19 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
     <?php endif; ?>
 
-	<form id=“login-form” action=“/login” method=“POST”>
+	<form id="login-form" action="/login" method="POST">
 		<div>
-            <label for=“username”>Username: </label>
-            <input type=“text” id=“username” name=“username” required>
+            <label for="username">Username: </label>
+            <input type="text" id="username" name="username" required>
         </div>
 
         <div>
-            <label for=“password”>Password: </label>
-            <input type="password" id=“password” name=“password” required>
+            <label for="password">Password: </label>
+            <input type="password" id="password" name="password" required>
         </div>
 
         <div>
-            <button type=“submit” id=”loginBtn”>Login</button>
+            <button type="submit" id="loginBtn">Login</button>
         </div>
 	</form>
 </body>
