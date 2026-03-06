@@ -5,13 +5,9 @@ $method = $_SERVER['REQUEST_METHOD'];
 $path = $_GET['path'] ?? '';
 $segments = explode('/', trim($path, '/'));
 
-if ($segments[0] == 'api') {
-    $resource = $segments[1] ?? null;
-    $id = $segments[2] ?? null;
-} else {
-    $resource = $segments[0] ?? null;
-    $id = $segments[1] ?? null;
-}
+$resource = $segments[0] ?? null;
+$id = $segments[1] ?? null;
+
 
 $valid_resources = ['static', 'performance', 'activity'];
 if (!in_array($resource, $valid_resources)) {
