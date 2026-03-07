@@ -68,8 +68,8 @@
               const row = document.createElement("tr");
               row.innerHTML = `
                                 <td>${item.id || "N/A"}</td>
-                                <td>${item.session_id || "N/A"}</td>
                                 <td>${item.received_at || "N/A"}</td>
+                                <td>${item.session_id || "N/A"}</td>
                                 <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
                             `;
               tbody.appendChild(row);
@@ -89,7 +89,7 @@
       refreshData("static");
     </script>
 
-    <!-- <h3>Performance Visualization</h3>
+    <h3>Performance Visualization</h3>
     <div style="width: 600px">
       <canvas id="analyticsChart"></canvas>
     </div>
@@ -161,6 +161,6 @@
           })
           .catch((err) => console.error("Fetch Error:", err));
       });
-    </script> -->
+    </script>
   </body>
 </html>
