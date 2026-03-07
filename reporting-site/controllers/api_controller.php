@@ -29,10 +29,16 @@ try {
                 $stmt = $pdo->prepare("SELECT * FROM analytics_log WHERE id = ? AND type = ?");
                 $stmt->execute([$id, $resource]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($result) {
+                    $result['payload'] = json_decode($result['payload'], true);
+                }
             } else {
-                $stmt = $pdo->prepare("SELECT * FROM analytics_log WHERE type = ?");
+                $stmt = $pdo->prepare("SELECT * FROM analytics_log WHERE type = ? ORDER BY id DESC");
                 $stmt->execute([$resource]);
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($result as &$row) {
+                    $row['payload'] = json_decode($row['payload'], true);
+                }
             }
             echo json_encode($result ?: ["message" => "No records found"]);
             break;

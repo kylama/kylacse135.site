@@ -57,7 +57,13 @@
                 } else {
                     allData.forEach(row => {
                         const tr = document.createElement('tr');
-                        tr.innerHTML = `<td>${row.id || 'N/A'}</td><td>${row.type || 'N/A'}</td><td>${row.payload || 'N/A'}</td>`;
+                        const prettyPayload = JSON.stringify(row.payload, null, 2);
+                        
+                        tr.innerHTML = `
+                            <td>${row.id}</td>
+                            <td>${row.type}</td>
+                            <td><pre style="font-size: 10px;">${prettyPayload}</pre></td>
+                        `;
                         tbody.appendChild(tr);
                     });
                 }
