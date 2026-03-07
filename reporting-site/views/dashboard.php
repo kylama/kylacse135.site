@@ -35,6 +35,7 @@
         <thead>
           <tr>
             <th>Entry ID</th>
+            <th>Time</th>
             <th>Session</th>
             <th>Raw Data (JSON)</th>
           </tr>
@@ -57,7 +58,7 @@
         table.style.display = "none";
 
         try {
-          const res = await fetch(`/?path=api/${resource}`);
+          const res = await fetch(`/api/${resource}`);
           const data = await res.json();
 
           const rows = Array.isArray(data) ? data : [];
@@ -68,6 +69,7 @@
               row.innerHTML = `
                                 <td>${item.id || "N/A"}</td>
                                 <td>${item.session_id || "N/A"}</td>
+                                <td>${item.received_at || "N/A"}</td>
                                 <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
                             `;
               tbody.appendChild(row);
