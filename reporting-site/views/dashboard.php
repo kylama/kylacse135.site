@@ -84,10 +84,7 @@
         }
       }
 
-      window.addEventListener("DOMContentLoaded", () => {
-        console.log("DOM loaded, calling refreshData...");
-        refreshData("static");
-      });
+      refreshData("static");
     </script>
 
     <!-- <h3>Performance Visualization</h3>

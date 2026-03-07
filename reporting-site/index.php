@@ -15,7 +15,7 @@ switch ($path) {
         include 'views/login.php';
         break;
     case 'dashboard':
-        include __DIR__ . '/views/dashboard.html';
+        include __DIR__ . '/views/dashboard.php';
         break;
     case 'api/static':
     case 'api/performance':
