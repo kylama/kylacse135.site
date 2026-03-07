@@ -57,7 +57,7 @@
         table.style.display = "none";
 
         try {
-          const res = await fetch(`/api/${resource}`);
+          const res = await fetch(`/?path=api/${resource}`);
           const data = await res.json();
 
           const rows = Array.isArray(data) ? data : [];
