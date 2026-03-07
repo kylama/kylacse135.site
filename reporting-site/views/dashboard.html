@@ -45,6 +45,7 @@
 
     <script>
       async function refreshData(resource) {
+        console.log("Function Started for resource:", resource);
         const table = document.getElementById("analyticsGrid");
         const tbody = document.getElementById("gridContent");
         const status = document.getElementById("status");
@@ -82,7 +83,10 @@
         }
       }
 
-      refreshData("static");
+      window.addEventListener("DOMContentLoaded", () => {
+        console.log("DOM loaded, calling refreshData...");
+        refreshData("static");
+      });
     </script>
 
     <!-- <h3>Performance Visualization</h3>
