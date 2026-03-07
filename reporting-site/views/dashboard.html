@@ -41,68 +41,51 @@
         </thead>
         <tbody id="gridContent"></tbody>
       </table>
-
-      <!-- <canvas id="typeChart"></canvas> -->
     </div>
 
     <script>
       async function refreshData(resource) {
         const table = document.getElementById("analyticsGrid");
-        const content = document.getElementById("gridContent");
+        const tbody = document.getElementById("gridContent");
         const status = document.getElementById("status");
-        // const tbody = document.getElementById('gridContent');
-        content.innerHTML = "";
+
+        tbody.innerHTML = "";
         status.style.display = "block";
         status.innerText = `Fetching ${resource} data...`;
         table.style.display = "none";
-        // tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
 
         try {
           const res = await fetch(`/api/${resource}`);
           const data = await res.json();
 
-          // tbody.innerHTML = '';
+          if (data && Array.isArray(data)) {
+            if (data.length > 0) {
+              data.forEach((item) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                                <td>${item.id}</td>
+                                <td>${item.session_id}</td>
+                                <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
+                            `;
+                tbody.appendChild(row);
+              });
 
-          if (Array.isArray(data)) {
-            data.forEach((item) => {
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                            <td>${item.id}</td>
-                            <td>${item.session_id}</td>
-                            <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
-                        `;
-              tbody.appendChild(row);
-            });
-
-            status.style.display = "none";
-            table.style.display = "table";
-          } else {
-            status.innerText = "Error loading data: " + err;
+              status.style.display = "none";
+              table.style.display = "table";
+            } else {
+              status.innerText = `No records found for ${resource}.`;
+            }
           }
         } catch (err) {
           console.error("Fetch failed:", err);
+          status.innerText = "Error loading data:" + err.message;
         }
       }
 
       refreshData("static");
     </script>
 
-    <!-- <h2>Analytics Dashboard</h2>
-    <nav><a href="/logout">Logout</a></nav>
-
-    <h3>Raw Data Table</h3>
-    <table id="analyticsTable">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Type</th>
-                <th>Payload</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table> -->
-
-    <h3>Performance Visualization</h3>
+    <!-- <h3>Performance Visualization</h3>
     <div style="width: 600px">
       <canvas id="analyticsChart"></canvas>
     </div>
@@ -174,6 +157,6 @@
           })
           .catch((err) => console.error("Fetch Error:", err));
       });
-    </script>
+    </script> -->
   </body>
 </html>
