@@ -29,18 +29,20 @@ try {
                 $stmt = $pdo->prepare("SELECT * FROM analytics_log WHERE id = ? AND type = ?");
                 $stmt->execute([$id, $resource]);
                 $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                if ($result) {
+                if ($result && isset($result['payload'])) {
                     $result['payload'] = json_decode($result['payload'], true);
                 }
             } else {
-                $stmt = $pdo->prepare("SELECT * FROM analytics_log WHERE type = ? ORDER BY id DESC");
+                $stmt = $pdo->prepare("SELECT * FROM analytics_log WHERE type = ?");
                 $stmt->execute([$resource]);
                 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 foreach ($result as &$row) {
-                    $row['payload'] = json_decode($row['payload'], true);
+                    if (isset($row['payload'])) {
+                        $row['payload'] = json_decode($row['payload'], true);
+                    }
                 }
             }
-            echo json_encode($result ?: ["message" => "No records found"]);
+            sendJsonResponse(200, $result ?: ["message" => "No records found"]);
             break;
 
         case 'DELETE':
@@ -113,6 +115,12 @@ try {
             http_response_code(405);
             echo json_encode(["error" => "Method not allowed"]);
             break;
+    }
+
+    function sendJsonResponse($code, $data) {
+        http_response_code($code);
+        echo json_encode($data);
+        exit;
     }
 } catch (PDOException $e) {
     http_response_code(500);

@@ -16,7 +16,66 @@
     </style>
 </head>
 <body>
-	<h2>Analytics Dashboard</h2>
+    <div class="dashboard-container">
+        <h2>Reporting Dashboard</h2>
+
+        <div class="selector-box">
+            <label>View Category: </label>
+            <select id="typeSelector" onchange="refreshData(this.value)">
+                <option value="static">Static Analytics</option>
+                <option value="performance">Performance Analytics</option>
+                <option value="activity">Activity Analytics</option>
+            </select>
+        </div>
+
+        <table id="analyticsGrid">
+            <thead>
+                <tr>
+                    <th>Entry ID</th>
+                    <th>Session</th>
+                    <th>Raw Data (JSON)</th>
+                </tr>
+            </thead>
+            <tbody id="gridContent"></tbody>
+        </table>
+
+        <canvas id="typeChart"></canvas>
+    </div>
+
+    <script>
+        async function refreshData(resource) {
+            const tbody = document.getElementById('gridContent');
+            tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+
+            try {
+                const res = await fetch(`/api/${resource}`);
+                const data = await res.json();
+
+                tbody.innerHTML = '';
+
+                if (Array.isArray(data)) {
+                    data.forEach(item => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${item.id}</td>
+                            <td>${item.session_id}</td>
+                            <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="3">No records found.</td></tr>';
+                }
+            } catch (err) {
+                console.error("Fetch failed:", err);
+            }
+        }
+
+        refreshData('static');
+    </script>
+
+
+	<!-- <h2>Analytics Dashboard</h2>
     <nav><a href="/logout">Logout</a></nav>
 
     <h3>Raw Data Table</h3>
@@ -29,7 +88,7 @@
             </tr>
         </thead>
         <tbody id="tableBody"></tbody>
-    </table>
+    </table> -->
 
     <h3>Performance Visualization</h3>
     <div style="width: 600px;">
