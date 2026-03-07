@@ -1,81 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Analytics Dashboard</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Analytics Dashboard</title>
     <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="dashboard-container">
-        <h2>Reporting Dashboard</h2>
+      <h2>Reporting Dashboard</h2>
 
-        <div class="selector-box">
-            <label>View Category: </label>
-            <select id="typeSelector" onchange="refreshData(this.value)">
-                <option value="static">Static Analytics</option>
-                <option value="performance">Performance Analytics</option>
-                <option value="activity">Activity Analytics</option>
-            </select>
-        </div>
+      <div class="selector-box">
+        <label>View Category: </label>
+        <select id="typeSelector" onchange="refreshData(this.value)">
+          <option value="static">Static Analytics</option>
+          <option value="performance">Performance Analytics</option>
+          <option value="activity">Activity Analytics</option>
+        </select>
+      </div>
 
-        <table id="analyticsGrid">
-            <thead>
-                <tr>
-                    <th>Entry ID</th>
-                    <th>Session</th>
-                    <th>Raw Data (JSON)</th>
-                </tr>
-            </thead>
-            <tbody id="gridContent"></tbody>
-        </table>
+      <div id="status">Loading data...</div>
 
-        <canvas id="typeChart"></canvas>
+      <table id="analyticsGrid">
+        <thead>
+          <tr>
+            <th>Entry ID</th>
+            <th>Session</th>
+            <th>Raw Data (JSON)</th>
+          </tr>
+        </thead>
+        <tbody id="gridContent"></tbody>
+      </table>
+
+      <!-- <canvas id="typeChart"></canvas> -->
     </div>
 
     <script>
-        async function refreshData(resource) {
-            const tbody = document.getElementById('gridContent');
-            tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
+      async function refreshData(resource) {
+        const table = document.getElementById("analyticsGrid");
+        const content = document.getElementById("gridContent");
+        const status = document.getElementById("status");
+        // const tbody = document.getElementById('gridContent');
+        content.innerHTML = "";
+        status.style.display = "block";
+        status.innerText = `Fetching ${resource} data...`;
+        table.style.display = "none";
+        // tbody.innerHTML = '<tr><td colspan="3">Loading...</td></tr>';
 
-            try {
-                const res = await fetch(`/api/${resource}`);
-                const data = await res.json();
+        try {
+          const res = await fetch(`/api/${resource}`);
+          const data = await res.json();
 
-                tbody.innerHTML = '';
+          // tbody.innerHTML = '';
 
-                if (Array.isArray(data)) {
-                    data.forEach(item => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
+          if (Array.isArray(data)) {
+            data.forEach((item) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
                             <td>${item.id}</td>
                             <td>${item.session_id}</td>
                             <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
                         `;
-                        tbody.appendChild(row);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="3">No records found.</td></tr>';
-                }
-            } catch (err) {
-                console.error("Fetch failed:", err);
-            }
-        }
+              tbody.appendChild(row);
+            });
 
-        refreshData('static');
+            status.style.display = "none";
+            table.style.display = "table";
+          } else {
+            status.innerText = "Error loading data: " + err;
+          }
+        } catch (err) {
+          console.error("Fetch failed:", err);
+        }
+      }
+
+      refreshData("static");
     </script>
 
-
-	<!-- <h2>Analytics Dashboard</h2>
+    <!-- <h2>Analytics Dashboard</h2>
     <nav><a href="/logout">Logout</a></nav>
 
     <h3>Raw Data Table</h3>
@@ -91,62 +103,77 @@
     </table> -->
 
     <h3>Performance Visualization</h3>
-    <div style="width: 600px;">
-        <canvas id="analyticsChart"></canvas>
+    <div style="width: 600px">
+      <canvas id="analyticsChart"></canvas>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            Promise.all([
-                fetch('/api/static').then(r => r.json()).catch(e => ({error: true})),
-                fetch('/api/performance').then(r => r.json()).catch(e => ({error: true})),
-                fetch('/api/activity').then(r => r.json()).catch(e => ({error: true}))
-            ]).then(([staticData, perfData, activityData]) => {
-                staticData = Array.isArray(staticData) ? staticData : [];
-                perfData = Array.isArray(perfData) ? perfData : [];
-                activityData = Array.isArray(activityData) ? activityData : [];
+      window.addEventListener("DOMContentLoaded", () => {
+        Promise.all([
+          fetch("/api/static")
+            .then((r) => r.json())
+            .catch((e) => ({ error: true })),
+          fetch("/api/performance")
+            .then((r) => r.json())
+            .catch((e) => ({ error: true })),
+          fetch("/api/activity")
+            .then((r) => r.json())
+            .catch((e) => ({ error: true })),
+        ])
+          .then(([staticData, perfData, activityData]) => {
+            staticData = Array.isArray(staticData) ? staticData : [];
+            perfData = Array.isArray(perfData) ? perfData : [];
+            activityData = Array.isArray(activityData) ? activityData : [];
 
-                const allData = [...staticData, ...perfData, ...activityData];
-                const tbody = document.getElementById('tableBody');
-                tbody.innerHTML = '';
+            const allData = [...staticData, ...perfData, ...activityData];
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = "";
 
-                if (allData.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="3">No data available.</td></tr>';
-                } else {
-                    allData.forEach(row => {
-                        const tr = document.createElement('tr');
-                        const prettyPayload = JSON.stringify(row.payload, null, 2);
-                        
-                        tr.innerHTML = `
+            if (allData.length === 0) {
+              tbody.innerHTML =
+                '<tr><td colspan="3">No data available.</td></tr>';
+            } else {
+              allData.forEach((row) => {
+                const tr = document.createElement("tr");
+                const prettyPayload = JSON.stringify(row.payload, null, 2);
+
+                tr.innerHTML = `
                             <td>${row.id}</td>
                             <td>${row.type}</td>
                             <td><pre style="font-size: 10px;">${prettyPayload}</pre></td>
                         `;
-                        tbody.appendChild(tr);
-                    });
-                }
+                tbody.appendChild(tr);
+              });
+            }
 
-                const chartCanvas = document.getElementById('analyticsChart');
-                if (chartCanvas) {
-                    const ctx = chartCanvas.getContext('2d');
-                    new Chart(ctx, {
-                        type: 'pie',
-                        data: {
-                            labels: ['Static', 'Performance', 'Activity'],
-                            datasets: [{
-                                data: [staticData.length, perfData.length, activityData.length],
-                                backgroundColor: [
-                                    'rgba(255, 100, 130, 0.5)',
-                                    'rgba(55, 160, 235, 0.5)',
-                                    'rgba(255, 205, 85, 0.5)'
-                                ]
-                            }]
-                        }
-                    });
-                }
-            }).catch(err => console.error("Fetch Error:", err));
-        });
+            const chartCanvas = document.getElementById("analyticsChart");
+            if (chartCanvas) {
+              const ctx = chartCanvas.getContext("2d");
+              new Chart(ctx, {
+                type: "pie",
+                data: {
+                  labels: ["Static", "Performance", "Activity"],
+                  datasets: [
+                    {
+                      data: [
+                        staticData.length,
+                        perfData.length,
+                        activityData.length,
+                      ],
+                      backgroundColor: [
+                        "rgba(255, 100, 130, 0.5)",
+                        "rgba(55, 160, 235, 0.5)",
+                        "rgba(255, 205, 85, 0.5)",
+                      ],
+                    },
+                  ],
+                },
+              });
+            }
+          })
+          .catch((err) => console.error("Fetch Error:", err));
+      });
     </script>
-</body>
+  </body>
 </html>
