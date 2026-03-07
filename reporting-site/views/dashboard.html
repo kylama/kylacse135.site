@@ -55,30 +55,30 @@
         table.style.display = "none";
 
         try {
-          const res = await fetch(`/api/${resource}`);
+          const res = await fetch(`api/${resource}`);
           const data = await res.json();
 
-          if (data && Array.isArray(data)) {
-            if (data.length > 0) {
-              data.forEach((item) => {
-                const row = document.createElement("tr");
-                row.innerHTML = `
-                                <td>${item.id}</td>
-                                <td>${item.session_id}</td>
+          const rows = Array.isArray(data) ? data : [];
+
+          if (rows.length > 0) {
+            rows.forEach((item) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                                <td>${item.id || "N/A"}</td>
+                                <td>${item.session_id || "N/A"}</td>
                                 <td><pre>${JSON.stringify(item.payload, null, 2)}</pre></td>
                             `;
-                tbody.appendChild(row);
-              });
+              tbody.appendChild(row);
+            });
 
-              status.style.display = "none";
-              table.style.display = "table";
-            } else {
-              status.innerText = `No records found for ${resource}.`;
-            }
+            status.style.display = "none";
+            table.style.display = "table";
+          } else {
+            status.innerText = `No records found for ${resource}.`;
           }
         } catch (err) {
           console.error("Fetch failed:", err);
-          status.innerText = "Error loading data:" + err.message;
+          status.innerText = "Error:" + err.message;
         }
       }
 

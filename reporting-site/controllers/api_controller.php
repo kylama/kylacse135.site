@@ -116,13 +116,13 @@ try {
             echo json_encode(["error" => "Method not allowed"]);
             break;
     }
-
-    function sendJsonResponse($code, $data) {
-        http_response_code($code);
-        echo json_encode($data);
-        exit;
-    }
 } catch (PDOException $e) {
     http_response_code(500);
     echo json_encode(["error" => "Database connection failed"]);
+}
+
+function sendJsonResponse($code, $data) {
+    http_response_code($code);
+    echo json_encode($data);
+    exit;
 }
